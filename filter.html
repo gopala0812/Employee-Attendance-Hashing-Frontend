@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sort Data - Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="hamburger" class="hamburger">☰</button>
+    <h1 class="title">📊 Sort Attendance Data</h1>
+  </header>
+
+  <nav id="sidebar" class="sidebar visible">
+    <div class="sidebar-banner">
+      <img src="image.png" alt="Sidebar Banner">
+    </div>
+    <a href="index.html" class="nav-link">📤 Upload Data</a>
+    <a href="search.html" class="nav-link">🔍 Search</a>
+    <a href="filter.html" class="nav-link">📊 Sort</a>
+    <a href="settings.html" class="nav-link">⚙️ Settings</a>
+    <button id="closeSidebar" class="close-sidebar">✕</button>
+  </nav>
+
+  <main class="main">
+    <section>
+      <h2>Sort Employees by Attendance %</h2>
+      <div class="form-row">
+        <button onclick="sortData('asc')">⬆️ Sort Ascending</button>
+        <button onclick="sortData('desc')">⬇️ Sort Descending</button>
+      </div>
+
+      <div class="results">
+        <table id="sortTable" class="results-table hidden">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Attendance</th>
+              <th>Total Days</th>
+              <th>%</th>
+              <th>Hash Index</th>
+            </tr>
+          </thead>
+          <tbody id="sortBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Employee Attendance Hashing System | Built by GOPALA KRISHNA H K</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

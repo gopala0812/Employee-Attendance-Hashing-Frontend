@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings - Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="hamburger" class="hamburger">☰</button>
+    <h1 class="title">⚙️ Settings & Reports</h1>
+  </header>
+
+  <nav id="sidebar" class="sidebar visible">
+    <div class="sidebar-banner">
+      <img src="image.png" alt="Sidebar Banner">
+    </div>
+    <a href="index.html" class="nav-link">📤 Upload Data</a>
+    <a href="search.html" class="nav-link">🔍 Search</a>
+    <a href="filter.html" class="nav-link">📊 Sort</a>
+    <a href="settings.html" class="nav-link">⚙️ Settings</a>
+    <button id="closeSidebar" class="close-sidebar">✕</button>
+  </nav>
+
+  <main class="main">
+    <section>
+      <h2>Generate Attendance Report</h2>
+      <div class="form-row">
+        <input type="number" id="filterPercent" placeholder="Enter Attendance % (e.g. 80)">
+        <button onclick="downloadReport()">⬇️ Download PDF</button>
+      </div>
+
+      <h3>Theme</h3>
+      <button onclick="toggleTheme()">🌓 Toggle Theme</button>
+
+      <h3>About</h3>
+      <p>Employee Attendance Hashing System demonstrates <b>Searching</b>, <b>Sorting</b>, and <b>Hashing</b> algorithms using real-world attendance data.</p>
+
+      <h3>Contact</h3>
+      <p>Developed by <b>Gopala Krishna H K</b> (2117240020113)<br>
+      Department of Computer Science & Engineering, RIT<br>
+      📧 <a href="mailto:gopalakrishnahk04@gmail.com">gopalakrishnahk04@gmail.com</a><br>
+      🌐 <a href="https://github.com/GopalaKrishna04">GitHub</a></p>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Employee Attendance Hashing System | Built by GOPALA KRISHNA H K</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

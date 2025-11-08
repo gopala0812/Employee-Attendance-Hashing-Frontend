@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Search Employee - Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <button id="hamburger" class="hamburger" aria-label="Open menu">☰</button>
+    <h1 class="title">🔍 Search Employee</h1>
+  </header>
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="sidebar visible">
+    <div class="sidebar-banner">
+      <img src="image.png" alt="Sidebar Banner">
+    </div>
+    <a href="index.html" class="nav-link">📤 Upload Data</a>
+    <a href="search.html" class="nav-link">🔍 Search</a>
+    <a href="filter.html" class="nav-link">📊 Sort</a>
+    <a href="settings.html" class="nav-link">⚙️ Settings</a>
+    <button id="closeSidebar" class="close-sidebar">✕</button>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <section>
+      <h2>Search Employee</h2>
+
+      <!-- Live Search Inputs -->
+      <div class="form-row">
+        <input type="number" id="searchId" placeholder="Search by ID" oninput="liveSearch()" />
+        <input type="text" id="searchName" placeholder="Search by Name" oninput="liveSearch()" />
+        <input type="text" id="searchDept" placeholder="Search by Department" oninput="liveSearch()" />
+        <button type="button" onclick="clearSearch()">🧹 Clear</button>
+      </div>
+
+      <div id="searchStatus" class="status"></div>
+
+      <!-- Results Table -->
+      <div class="results">
+        <table id="searchTable" class="results-table hidden">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Attendance</th>
+              <th>Total Days</th>
+              <th>%</th>
+              <th>Hash Index</th>
+            </tr>
+          </thead>
+          <tbody id="searchBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Employee Attendance Hashing System | Built by <strong>Gopala Krishna H K</strong></p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

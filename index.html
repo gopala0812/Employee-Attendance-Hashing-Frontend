@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>₹ Employee Attendance Hashing System - Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ✅ Topbar -->
+  <header class="topbar">
+    <button id="hamburger" class="hamburger" aria-label="Open menu">☰</button>
+    <h1 class="title">₹ Employee Attendance Hashing System</h1>
+  </header>
+
+  <!-- ✅ Sidebar -->
+  <nav id="sidebar" class="sidebar visible">
+    <div class="sidebar-banner">
+      <img src="image.png" alt="Sidebar Banner">
+    </div>
+    <div class="sidebar-head"></div>
+    <a href="index.html" class="nav-link">📤 Upload Data</a>
+    <a href="search.html" class="nav-link">🔍 Search</a>
+    <a href="filter.html" class="nav-link">📊 Sort</a>
+    <a href="settings.html" class="nav-link">⚙️ Settings</a>
+    <button id="closeSidebar" class="close-sidebar">✕</button>
+  </nav>
+
+  <!-- ✅ Main Content -->
+  <main class="main">
+    <section>
+      <h2>Upload Attendance Data</h2>
+      <p class="status" style="margin-bottom:12px;">
+        Upload a <strong>JSON</strong> or <strong>Excel (.xlsx)</strong> file containing: 
+        ID, Name, Department, Attendance, and Total Days.
+      </p>
+
+      <!-- Upload Section -->
+      <div class="form-row">
+        <input type="file" id="fileInput" accept=".json,.xlsx" />
+        <button type="button" id="uploadBtn">📤 Upload</button>
+      </div>
+
+      <div id="uploadStatus" class="status"></div>
+
+      <!-- Uploaded Results Table -->
+      <div class="results">
+        <table id="resultsTable" class="results-table hidden">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Department</th>
+              <th>Attendance</th>
+              <th>Total Days</th>
+              <th>%</th>
+              <th>Hash Index</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>© 2025 Employee Attendance Hashing System | Built by <strong>Gopala Krishna H K</strong></p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

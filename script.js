@@ -420,5 +420,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // On load, show whatever is in DB
   loadAllData();
+
+  // ---------- CLEAR SEARCH (Manual button) ----------
+function clearSearch() {
+  const sId = document.getElementById("searchId");
+  const sName = document.getElementById("searchName");
+  const sDept = document.getElementById("searchDept");
+  const status = document.getElementById("searchStatus");
+  const table = document.getElementById("searchTable");
+  const body = document.getElementById("searchBody");
+
+  if (sId) sId.value = "";
+  if (sName) sName.value = "";
+  if (sDept) sDept.value = "";
+  if (status) status.textContent = "";
+  if (table) table.classList.add("hidden");
+  if (body) body.innerHTML = "";
+}
+
 });
+
 

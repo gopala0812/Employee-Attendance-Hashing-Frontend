@@ -1,18 +1,12 @@
-// -----------------------------------------------------
-// ✅ Employee Attendance Hashing System - script.js
-// -----------------------------------------------------
+// script.js - Robust shared frontend logic for Attendance System
+const backendURL = "https://employee-attendance-hashing-backend.onrender.com"; // change to Render URL after deployment
 
-const backendURL = "https://employee-attendance-hashing-backend.onrender.com"; // backend endpoint
-
-// ---------- Helper utilities ----------
+// small helper
 const $ = id => document.getElementById(id);
-const showStatus = (el, msg, isError = false) => {
-  if (!el) return;
-  el.textContent = msg;
-  el.style.color = isError ? "#b91c1c" : "";
-};
+const showStatus = (el, msg, isError=false) => { if (!el) return; el.textContent = msg; el.style.color = isError ? "#b91c1c" : ""; };
 
-// ---------- Sidebar + Theme Handling ----------
+// ---------- SIDEBAR + THEME ----------
+// Robust sidebar toggle and responsive behavior
 (() => {
   const sidebar = $("sidebar");
   const hamburger = $("hamburger");
@@ -27,19 +21,20 @@ const showStatus = (el, msg, isError = false) => {
     sidebar?.classList.remove("visible");
   };
 
-  if (hamburger) {
-    hamburger.addEventListener("click", () => {
-      if (window.innerWidth < 900) {
-        if (sidebar?.classList.contains("visible")) hideSidebar();
-        else showSidebar();
-      } else {
-        showSidebar();
-      }
-    });
-  }
+  if (hamburger) hamburger.addEventListener("click", () => {
+    // toggle visibility on small screens
+    if (window.innerWidth < 900) {
+      if (sidebar?.classList.contains("visible")) hideSidebar();
+      else showSidebar();
+    } else {
+      // on large screens, keep visible
+      showSidebar();
+    }
+  });
 
   if (closeSidebar) closeSidebar.addEventListener("click", hideSidebar);
 
+  // initialize based on window width
   const initSidebar = () => {
     if (window.innerWidth < 900) hideSidebar();
     else showSidebar();
@@ -49,53 +44,59 @@ const showStatus = (el, msg, isError = false) => {
   document.addEventListener("DOMContentLoaded", initSidebar);
 })();
 
-// ---------- Theme Persistence ----------
+// Theme persistence (toggle exists on settings page)
 (() => {
   const saved = localStorage.getItem("theme");
   if (saved === "dark") document.body.classList.add("dark");
 })();
 
-// -----------------------------------------------------
-// ✅ UPLOAD PAGE LOGIC
-// -----------------------------------------------------
+// ---------- UPLOAD PAGE ----------
+// ---------- UPLOAD PAGE ----------
 async function uploadFile() {
-  const fileInput = $("fileInput");
-  const status = $("uploadStatus");
-  const resultsTable = $("resultsTable");
-  const resultsBody = $("resultsBody");
+  const fileInput = document.getElementById("fileInput");
+  const status = document.getElementById("uploadStatus");
+  const resultsTable = document.getElementById("resultsTable");
+  const resultsBody = document.getElementById("resultsBody");
 
   if (!fileInput) return alert("Upload input not found!");
   const file = fileInput.files?.[0];
   if (!file) return alert("Please select a file!");
 
   status.textContent = "Uploading...";
-  status.style.color = "#2563eb";
+  status.style.color = "#2563eb"; // blue text for uploading state
 
   try {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${backendURL}/upload`, { method: "POST", body: formData });
+    const res = await fetch(`${backendURL}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
     const text = await res.text();
     let data;
     try { data = JSON.parse(text); } catch { data = {}; }
 
     if (!res.ok) {
       const msg = data.message || data.error || "Upload failed!";
-      showStatus(status, `❌ ${msg}`, true);
+      status.textContent = `❌ ${msg}`;
+      status.style.color = "#e11d48"; // red
       return;
     }
 
+    // ✅ Success message
     const rows = Array.isArray(data.data) ? data.data : [];
     const count = data.count ?? rows.length;
     status.textContent = `✅ Upload successful! ${count} record(s) added to database.`;
-    status.style.color = "#16a34a";
+    status.style.color = "#16a34a"; // green
 
     console.log("Backend response:", data);
 
-    // populate table
+    // ✅ Display uploaded data in table
     if (resultsBody && resultsTable) {
       resultsBody.innerHTML = "";
+
       if (rows.length === 0) {
         const tr = document.createElement("tr");
         tr.innerHTML = `<td colspan="7" style="text-align:center; color:gray;">No records found.</td>`;
@@ -116,24 +117,25 @@ async function uploadFile() {
         });
       }
 
+      // make sure table becomes visible
       resultsTable.classList.remove("hidden");
       resultsTable.style.opacity = "0";
       setTimeout(() => { resultsTable.style.opacity = "1"; }, 100);
     }
 
-    // refresh view
+    // after upload, refresh the global view so database table is up-to-date
     await loadAllData();
 
   } catch (err) {
     console.error("Upload error:", err);
-    showStatus(status, `❌ Upload failed: ${err.message}`, true);
+    status.textContent = `❌ Upload failed: ${err.message}`;
+    status.style.color = "#e11d48"; // red
   }
 }
-
 async function loadAllData() {
-  const resultsTable = $("resultsTable");
-  const resultsBody = $("resultsBody");
-  const status = $("uploadStatus");
+  const resultsTable = document.getElementById("resultsTable");
+  const resultsBody = document.getElementById("resultsBody");
+  const status = document.getElementById("uploadStatus");
 
   try {
     const res = await fetch(`${backendURL}/view`);
@@ -167,13 +169,14 @@ async function loadAllData() {
     }
   } catch (err) {
     console.error("View error:", err);
-    if (status) showStatus(status, `❌ Failed to load data: ${err.message}`, true);
+    if (status) {
+      status.textContent = `❌ Failed to load data: ${err.message}`;
+      status.style.color = "#e11d48";
+    }
   }
 }
 
-// -----------------------------------------------------
-// ✅ DYNAMIC LIVE SEARCH (for search.html)
-// -----------------------------------------------------
+// ---------- DEBOUNCE HELPER ----------
 function debounce(fn, wait) {
   let t;
   return (...args) => {
@@ -182,19 +185,20 @@ function debounce(fn, wait) {
   };
 }
 
+// ---------- LIVE DYNAMIC SEARCH ----------
 async function liveSearch() {
   const id = ($("searchId")?.value || "").trim();
   const name = ($("searchName")?.value || "").trim();
-  const dept = ($("searchDept")?.value || "").trim();
+  const department = ($("searchDept")?.value || "").trim();
   const status = $("searchStatus");
   const table = $("searchTable");
   const body = $("searchBody");
 
-  // if empty inputs — clear everything
-  if (!id && !name && !dept) {
+  // if nothing entered, hide table and clear status
+  if (!id && !name && !department) {
     if (table) table.classList.add("hidden");
     if (status) status.textContent = "";
-    if (body) body.innerHTML = "";
+    body && (body.innerHTML = "");
     return;
   }
 
@@ -202,20 +206,21 @@ async function liveSearch() {
     const params = new URLSearchParams();
     if (id) params.append("id", id);
     if (name) params.append("name", name);
-    if (dept) params.append("department", dept);
+    if (department) params.append("department", department);
 
     const res = await fetch(`${backendURL}/search/dynamic?${params.toString()}`);
     if (!res.ok) {
-      showStatus(status, `❌ Search failed (${res.status})`, true);
+      const msg = `Search failed (status ${res.status})`;
+      if (status) { status.textContent = `❌ ${msg}`; status.style.color = "#e11d48"; }
       return;
     }
-
     const data = await res.json();
-    body.innerHTML = "";
 
+    // render
+    body.innerHTML = "";
     if (!Array.isArray(data) || data.length === 0) {
-      showStatus(status, "⚠️ No matching records found.");
-      if (table) table.classList.add("hidden");
+      if (status) { status.textContent = "⚠️ No matching records."; status.style.color = ""; }
+      table && table.classList.add("hidden");
       return;
     }
 
@@ -233,38 +238,81 @@ async function liveSearch() {
       body.appendChild(tr);
     });
 
-    showStatus(status, `✅ Found ${data.length} record(s).`);
+    if (status) { status.textContent = `✅ Found ${data.length} record(s).`; status.style.color = "#16a34a"; }
     table && table.classList.remove("hidden");
   } catch (err) {
-    console.error("Live search error:", err);
-    showStatus(status, `❌ Search error: ${err.message}`, true);
+    console.error("liveSearch error:", err);
+    if (status) { status.textContent = `❌ Search error: ${err.message}`; status.style.color = "#e11d48"; }
   }
 }
 
-const liveSearchDebounced = debounce(liveSearch, 250);
+// debounced version to attach to input events
+const liveSearchDebounced = debounce(liveSearch, 220);
 
-// -----------------------------------------------------
-// ✅ CLEAR SEARCH BUTTON (manual reset)
-// -----------------------------------------------------
-function clearSearch() {
-  const sId = $("searchId");
-  const sName = $("searchName");
-  const sDept = $("searchDept");
+// ---------- SEARCH PAGE (legacy single search) ----------
+async function searchEmployee() {
+  const idVal = $("searchId") ? $("searchId").value.trim() : "";
+  const nameVal = $("searchName") ? $("searchName").value.trim() : "";
   const status = $("searchStatus");
   const table = $("searchTable");
   const body = $("searchBody");
 
-  if (sId) sId.value = "";
-  if (sName) sName.value = "";
-  if (sDept) sDept.value = "";
-  if (status) status.textContent = "";
-  if (table) table.classList.add("hidden");
-  if (body) body.innerHTML = "";
+  if (!idVal && !nameVal) return alert("Enter ID or Name!");
+
+  showStatus(status, "Searching...");
+  const url = idVal ? `${backendURL}/search/id/${encodeURIComponent(idVal)}` : `${backendURL}/search/name/${encodeURIComponent(nameVal)}`;
+
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    let payload;
+    try { payload = JSON.parse(text); } catch (e) { payload = { __raw: text }; }
+
+    if (!res.ok) {
+      const msg = payload?.message || payload?.error || payload?.__raw || "Not found";
+      showStatus(status, `❌ ${msg}`, true);
+      if (table) table.classList.add("hidden");
+      return;
+    }
+
+    let results = [];
+    if (payload.record) results = [payload.record];
+    else if (Array.isArray(payload.records)) results = payload.records;
+    else if (Array.isArray(payload)) results = payload;
+    else if (payload.records && Array.isArray(payload.records)) results = payload.records;
+
+    if (!results.length) {
+      showStatus(status, "⚠️ No results found.");
+      if (table) table.classList.add("hidden");
+      return;
+    }
+
+    // render
+    if (table && body) {
+      body.innerHTML = "";
+      results.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id ?? ""}</td>
+          <td>${r.name ?? ""}</td>
+          <td>${r.department ?? ""}</td>
+          <td>${r.attendance ?? ""}</td>
+          <td>${r.total_days ?? ""}</td>
+          <td>${r.attendance_percentage ?? ""}</td>
+          <td>${r.hash_index ?? ""}</td>
+        `;
+        body.appendChild(tr);
+      });
+      table.classList.remove("hidden");
+    }
+    showStatus(status, `✅ Found ${results.length} result(s).`);
+  } catch (err) {
+    console.error("Search error:", err);
+    showStatus(status, `❌ Search failed: ${err.message || err}`, true);
+  }
 }
 
-// -----------------------------------------------------
-// ✅ SORT, DOWNLOAD, and EXPORT HELPERS
-// -----------------------------------------------------
+// ---------- SORT PAGE ----------
 async function sortData(order = "asc") {
   const table = $("sortTable");
   const body = $("sortBody");
@@ -295,6 +343,7 @@ async function sortData(order = "asc") {
   }
 }
 
+// ---------- DOWNLOAD REPORT ----------
 async function downloadReport() {
   const percentInput = $("filterPercent");
   if (!percentInput) return alert("Filter percent input not found.");
@@ -323,39 +372,52 @@ async function downloadReport() {
   }
 }
 
-// -----------------------------------------------------
-// ✅ GLOBAL FUNCTION EXPORTS
-// -----------------------------------------------------
+// expose functions for inline onclick usage
 window.uploadFile = uploadFile;
+window.searchEmployee = searchEmployee;
 window.sortData = sortData;
 window.downloadReport = downloadReport;
-window.clearSearch = clearSearch;
-window.liveSearch = liveSearch;
-
-// Theme toggle
 window.toggleTheme = () => {
   document.body.classList.toggle("dark");
   localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
 };
 
-// -----------------------------------------------------
-// ✅ EVENT INITIALIZATION
-// -----------------------------------------------------
+// Attach upload button listener after DOM loads
 document.addEventListener("DOMContentLoaded", () => {
-  const uploadBtn = $("uploadBtn");
+  const uploadBtn = document.getElementById("uploadBtn");
   if (uploadBtn) {
-    uploadBtn.addEventListener("click", e => {
-      e.preventDefault();
-      e.stopPropagation();
-      uploadFile();
+    uploadBtn.addEventListener("click", (e) => {
+      e.preventDefault();   // prevents accidental form behavior
+      e.stopPropagation();  // prevents event bubbling
+      uploadFile();         // calls your async upload
     });
   }
 
-  const sId = $("searchId");
-  const sName = $("searchName");
-  const sDept = $("searchDept");
+  // Attach live search inputs
+  const sId = document.getElementById("searchId");
+  const sName = document.getElementById("searchName");
+  const sDept = document.getElementById("searchDept");
+  const clearBtn = document.getElementById("clearSearchBtn");
 
   if (sId) sId.addEventListener("input", liveSearchDebounced);
   if (sName) sName.addEventListener("input", liveSearchDebounced);
   if (sDept) sDept.addEventListener("input", liveSearchDebounced);
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (sId) sId.value = "";
+      if (sName) sName.value = "";
+      if (sDept) sDept.value = "";
+      const status = document.getElementById("searchStatus");
+      if (status) status.textContent = "";
+      const table = document.getElementById("searchTable");
+      if (table) table.classList.add("hidden");
+      const body = document.getElementById("searchBody");
+      if (body) body.innerHTML = "";
+    });
+  }
+
+  // On load, show whatever is in DB
+  loadAllData();
 });

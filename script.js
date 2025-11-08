@@ -1,5 +1,5 @@
 // script.js - Robust shared frontend logic for Attendance System
-const backendURL = "http://localhost:7077"; // change to Render URL after deployment
+const backendURL = "https://employee-attendance-hashing-backend.onrender.com"; // change to Render URL after deployment
 
 // small helper
 const $ = id => document.getElementById(id);
@@ -421,3 +421,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // On load, show whatever is in DB
   loadAllData();
 });
+
